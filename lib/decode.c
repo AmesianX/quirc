@@ -641,6 +641,26 @@ static int take_bits(struct datastream *ds, int len)
 	return ret;
 }
 
+static int peek_bits(struct datastream *ds, int len)
+{
+	int ret = 0;
+	int ptr = ds->ptr;
+
+	while (len && (ptr < ds->data_bits)) {
+		uint8_t b = ds->data[ptr >> 3];
+		int bitpos = ptr & 7;
+
+		ret <<= 1;
+		if ((b << bitpos) & 0x80)
+			ret |= 1;
+
+		ptr++;
+		len--;
+	}
+
+	return ret;
+}
+
 static int numeric_tuple(struct quirc_data *data,
 			 struct datastream *ds,
 			 int bits, int digits)
@@ -832,6 +852,19 @@ static quirc_decode_error_t decode_eci(struct quirc_data *data,
 	return QUIRC_SUCCESS;
 }
 
+static quirc_decode_error_t decode_terminator(struct quirc_data *data,
+					   struct datastream *ds)
+{
+	int v;
+
+	v = peek_bits(ds, 8);
+	if(v == 0xec) {
+		return QUIRC_SUCCESS;
+	}
+
+	return QUIRC_WARN_INVALID_TERMINATOR;
+}
+
 static quirc_decode_error_t decode_payload(struct quirc_data *data,
 					   struct datastream *ds)
 {
@@ -840,6 +873,14 @@ static quirc_decode_error_t decode_payload(struct quirc_data *data,
 		int type = take_bits(ds, 4);
 
 		switch (type) {
+		case QUIRC_DATA_TYPE_TERMINATOR:
+			err = decode_terminator(data, ds);
+			if(err == QUIRC_SUCCESS) {
+				goto done;
+			} else {
+				err = QUIRC_SUCCESS;
+			}
+			break;
 		case QUIRC_DATA_TYPE_NUMERIC:
 			err = decode_numeric(data, ds);
 			break;

@@ -67,7 +67,8 @@ typedef enum {
 	QUIRC_ERROR_DATA_ECC,
 	QUIRC_ERROR_UNKNOWN_DATA_TYPE,
 	QUIRC_ERROR_DATA_OVERFLOW,
-	QUIRC_ERROR_DATA_UNDERFLOW
+	QUIRC_ERROR_DATA_UNDERFLOW,
+	QUIRC_WARN_INVALID_TERMINATOR
 } quirc_decode_error_t;
 
 /* Return a string error message for an error code. */
@@ -84,6 +85,7 @@ const char *quirc_strerror(quirc_decode_error_t err);
 #define QUIRC_ECC_LEVEL_Q     3
 
 /* QR-code data types. */
+#define QUIRC_DATA_TYPE_TERMINATOR    0
 #define QUIRC_DATA_TYPE_NUMERIC       1
 #define QUIRC_DATA_TYPE_ALPHA         2
 #define QUIRC_DATA_TYPE_BYTE          4
