@@ -855,12 +855,17 @@ static quirc_decode_error_t decode_eci(struct quirc_data *data,
 static quirc_decode_error_t decode_terminator(struct quirc_data *data,
 					   struct datastream *ds)
 {
-	int v;
+	int v, pad;
 
-	v = peek_bits(ds, 8);
-	if(v == 0xec) {
-		return QUIRC_SUCCESS;
+	pad = 8 - (ds->ptr % 8);
+	v = peek_bits(ds, pad);
+	if(v == 0 && bits_remaining(ds) >= pad + 8) {
+		v = peek_bits(ds, pad + 8);
+		if(v == 0xec) {
+			return QUIRC_SUCCESS;
+		}
 	}
+	data->payload[data->payload_len++] = '\n';
 
 	return QUIRC_WARN_INVALID_TERMINATOR;
 }
