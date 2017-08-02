@@ -865,7 +865,7 @@ static quirc_decode_error_t decode_terminator(struct quirc_data *data,
 			return QUIRC_SUCCESS;
 		}
 	}
-	data->payload[data->payload_len++] = '\n';
+	data->payload[data->payload_len++] = '\0';
 
 	return QUIRC_WARN_INVALID_TERMINATOR;
 }
