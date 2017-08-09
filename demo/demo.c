@@ -93,7 +93,16 @@ static void draw_qr(SDL_Surface *screen, struct quirc *q, struct dthash *dt)
 				fat_text_cent(screen, xc, yc,
 						quirc_strerror(err));
 		} else {
-			fat_text_cent(screen, xc, yc, (char *)data.payload);
+			char *str2 = (char *)malloc(data.payload_len + 1);
+			int flag = 0;
+			for(int i=0; i<data.payload_len; i++) {
+				str2[i] = data.payload[i];
+				if(!flag && str2[i] == '\0') {
+					str2[i] = '\n';
+					flag = 1;
+				}
+			}
+			fat_text_cent(screen, xc, yc, str2);
 			print_data(&data, dt, want_verbose);
 
 			if (want_verbose) {

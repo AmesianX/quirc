@@ -28,7 +28,7 @@ void print_data(const struct quirc_data *data, struct dthash *dt,
 	printf("==> ");
 	for(int i=0; i<data->payload_len; i++) {
 		if(data->payload[i] == '\0') {
-			putchar('|');
+			printf("\xe2\x90\x80");
 		} else {
 			putchar(data->payload[i]);
 		}
