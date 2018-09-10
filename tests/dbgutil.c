@@ -20,6 +20,7 @@
 
 #include <jpeglib.h>
 #include <png.h>
+#include <gif_lib.h>
 
 #include <quirc.h>
 
@@ -301,6 +302,32 @@ out:
 		else
 			png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
 	}
+	if (infile)
+		fclose(infile);
+	return (ret);
+}
+
+#define GIF_BYTES_TO_CHECK 4
+const static char gif_signature[] = {0x47, 0x49, 0x46, 0x38};
+int check_if_gif(const char *filename)
+{
+	int ret = 0;
+	FILE *infile = NULL;
+	unsigned char buf[GIF_BYTES_TO_CHECK];
+
+	/* Open the prospective GIF file. */
+	if ((infile = fopen(filename, "rb")) == NULL)
+		goto out;
+
+	/* Read in some of the signature bytes */
+	if (fread(buf, 1, GIF_BYTES_TO_CHECK, infile) != GIF_BYTES_TO_CHECK)
+		goto out;
+
+	if (bcmp(buf, gif_signature, GIF_BYTES_TO_CHECK) == 0)
+		ret = 1;
+
+	/* FALLTHROUGH */
+out:
 	if (infile)
 		fclose(infile);
 	return (ret);

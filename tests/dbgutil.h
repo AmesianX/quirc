@@ -45,4 +45,6 @@ int check_if_png(const char *filename);
  */
 int load_png(struct quirc *q, const char *filename);
 
+int check_if_gif(const char *filename);
+
 #endif

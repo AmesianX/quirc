@@ -239,6 +239,9 @@ int main(int argc, char **argv)
 	int status = -1;
 	if (check_if_png(argv[1])) {
 		status = load_png(q, argv[1]);
+	} else if (check_if_gif(argv[1])) {
+		puts("GIF!");
+		status = -1;
 	} else {
 		status = load_jpeg(q, argv[1]);
 	}
